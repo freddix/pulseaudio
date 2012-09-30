@@ -1,13 +1,12 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	2.0
-Release:	6
+Version:	2.1
+Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	1406645d15e66be0f531235760edea32
+# Source0-md5:	86912af7fd4f8aa67f83182c135b2a5c
 Source1:	%{name}-tmpfiles.conf
-Patch0:		%{name}-udev.patch
 Patch1:		%{name}-start-early.patch
 URL:		http://pulseaudio.org/
 BuildRequires:	GConf-devel
@@ -27,18 +26,13 @@ BuildRequires:	libltdl-devel
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libsndfile-devel
 BuildRequires:	libtool
-BuildRequires:	libwrap-devel
 BuildRequires:	orc-devel
 BuildRequires:	pkgconfig
+BuildRequires:	speex-devel
 BuildRequires:	xmltoman
 BuildRequires:	xorg-libSM-devel
 BuildRequires:	xorg-libX11-devel
-Requires(postun):	/usr/sbin/groupdel
-Requires(postun):	/usr/sbin/userdel
-Requires(pre):	/bin/id
-Requires(pre):	/usr/bin/getgid
-Requires(pre):	/usr/sbin/groupadd
-Requires(pre):	/usr/sbin/useradd
+Requires(pre,postun):	pwdutils
 Requires(pre):	coreutils
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	group(pulse)
@@ -120,7 +114,6 @@ X11 module for PulseAudio.
 
 %prep
 %setup -q
-%patch0 -p1
 %patch1 -p1
 
 sed -i -e 's/load-module module-console-kit/#load-module module-console-kit/g' \
@@ -143,16 +136,18 @@ sed -i -e 's/load-module module-console-kit/#load-module module-console-kit/g' \
 	--disable-silent-rules			\
 	--disable-solaris			\
 	--disable-static			\
+	--disable-tcpwrap			\
 	--disable-xen				\
 	--enable-systemd			\
 	--with-access-group=pulse-access	\
 	--with-system-group=pulse		\
-	--with-system-user=pulse
+	--with-system-user=pulse		\
+	--with-udev-rules-dir=/usr/lib/udev/rules.d
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{/etc/tmpfiles.d,/var/lib/pulse}
+install -d $RPM_BUILD_ROOT/var/lib/pulse
 
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -166,13 +161,13 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/pulse-*/modules/*.la
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	libs -p /sbin/ldconfig
-%postun	libs -p /sbin/ldconfig
+%post	libs -p /usr/sbin/ldconfig
+%postun	libs -p /usr/sbin/ldconfig
 
 %pre
-%groupadd -g 226 pulse
-%groupadd -g 228 pulse-access
-%useradd -u 226 -g 226 -d /run/pulse -s /bin/false -c "Pulseaudio user" pulse
+%groupadd -g 106 pulse
+%groupadd -g 107 pulse-access
+%useradd -u 106 -g 106 -d /run/pulse -s /bin/false -c "Pulseaudio user" pulse
 
 %postun
 if [ "$1" = "0" ]; then
@@ -196,7 +191,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pulse/default.pa
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pulse/system.pa
 %{_sysconfdir}/dbus-1/system.d/pulseaudio-system.conf
-/lib/udev/rules.d/90-pulseaudio.rules
+/usr/lib/udev/rules.d/90-pulseaudio.rules
 %{systemdtmpfilesdir}/pulse.conf
 %attr(0700, pulse, pulse) %dir /var/lib/pulse
 
@@ -301,7 +296,7 @@ fi
 %attr(755,root,root) %{_libdir}/libpulse-simple.so.*.*.*
 %attr(755,root,root) %{_libdir}/libpulse.so.*.*.*
 %dir %{_libdir}/pulseaudio
-%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-2.0.so
+%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-2.1.so
 
 %files devel
 %defattr(644,root,root,755)
