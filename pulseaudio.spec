@@ -1,7 +1,7 @@
 Summary:	Sound server
 Name:		pulseaudio
 Version:	2.1
-Release:	1
+Release:	2
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
@@ -16,6 +16,7 @@ BuildRequires:	automake
 BuildRequires:	avahi-devel
 BuildRequires:	bluez-libs-devel
 BuildRequires:	dbus-devel
+BuildRequires:	fftw3-single-devel
 BuildRequires:	glib-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	json-c-devel
@@ -27,8 +28,9 @@ BuildRequires:	libsamplerate-devel
 BuildRequires:	libsndfile-devel
 BuildRequires:	libtool
 BuildRequires:	orc-devel
-BuildRequires:	pkgconfig
+BuildRequires:	pkg-config
 BuildRequires:	speex-devel
+BuildRequires:	webrtc-audio-processing-devel
 BuildRequires:	xmltoman
 BuildRequires:	xorg-libSM-devel
 BuildRequires:	xorg-libX11-devel
@@ -213,6 +215,7 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/libprotocol-native.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/libprotocol-simple.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/librtp.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/libwebrtc-util.so
 
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-alsa-card.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-alsa-sink.so
@@ -270,6 +273,7 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-role-cork.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-port-available.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-systemd-login.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-surround-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-surround-sink.so
 
 %{_datadir}/pulseaudio/alsa-mixer
