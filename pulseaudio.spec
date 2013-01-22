@@ -1,20 +1,18 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	2.1
-Release:	3
+Version:	3.0
+Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	86912af7fd4f8aa67f83182c135b2a5c
+# Source0-md5:	cc6e7cafff9249c5066263ee578662de
 Source1:	%{name}-tmpfiles.conf
-Patch1:		%{name}-start-early.patch
 URL:		http://pulseaudio.org/
 BuildRequires:	GConf-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	avahi-devel
-BuildRequires:	bluez-libs-devel
 BuildRequires:	dbus-devel
 BuildRequires:	fftw3-single-devel
 BuildRequires:	glib-devel
@@ -25,6 +23,7 @@ BuildRequires:	libatomic_ops
 BuildRequires:	libcap-devel
 BuildRequires:	libltdl-devel
 BuildRequires:	libsamplerate-devel
+BuildRequires:	libsbc-devel
 BuildRequires:	libsndfile-devel
 BuildRequires:	libtool
 BuildRequires:	orc-devel
@@ -116,9 +115,8 @@ X11 module for PulseAudio.
 
 %prep
 %setup -q
-%patch1 -p1
 
-sed -i -e 's/load-module module-console-kit/#load-module module-console-kit/g' \
+%{__sed} -i 's/load-module module-console-kit/#load-module module-console-kit/g' \
 	src/daemon/default.pa.in
 
 %build
@@ -130,8 +128,6 @@ sed -i -e 's/load-module module-console-kit/#load-module module-console-kit/g' \
 %configure \
 	--disable-default-build-tests		\
 	--disable-esound			\
-	--disable-hal				\
-	--disable-hal-compat			\
 	--disable-lirc				\
 	--disable-oss-output			\
 	--disable-oss-wrapper			\
@@ -222,12 +218,14 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-alsa-source.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-always-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-augment-properties.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-policy.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-card-restore.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-cli-protocol-tcp.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-cli-protocol-unix.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-cli.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-combine-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-combine.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-console-kit.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-dbus-protocol.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-default-device-restore.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-detect.so
@@ -254,6 +252,7 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-position-event-sounds.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-remap-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rescue-streams.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-role-cork.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rtp-recv.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rtp-send.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rygel-media-server.so
@@ -264,17 +263,15 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-stream-restore.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-suspend-on-idle.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-connect.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-port-available.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-systemd-login.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-source.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-udev-detect.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-source.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-surround-sink.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-volume-restore.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-role-cork.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-port-available.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-systemd-login.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-surround-sink.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-surround-sink.so
 
 %{_datadir}/pulseaudio/alsa-mixer
 
@@ -300,7 +297,7 @@ fi
 %attr(755,root,root) %{_libdir}/libpulse-simple.so.*.*.*
 %attr(755,root,root) %{_libdir}/libpulse.so.*.*.*
 %dir %{_libdir}/pulseaudio
-%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-2.1.so
+%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-3.0.so
 
 %files devel
 %defattr(644,root,root,755)
@@ -320,8 +317,6 @@ fi
 %files bluetooth
 %defattr(644,root,root,755)
 %attr(4755,root,root) %{_libdir}/pulse/proximity-helper
-%attr(755,root,root) %{_libdir}/pulse-*/modules/libbluetooth-ipc.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/libbluetooth-sbc.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/libbluetooth-util.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-device.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-discover.so
