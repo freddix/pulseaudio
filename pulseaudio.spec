@@ -1,7 +1,7 @@
 Summary:	Sound server
 Name:		pulseaudio
 Version:	3.0
-Release:	1
+Release:	2
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
@@ -13,6 +13,7 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	avahi-devel
+BuildRequires:	bluez4-devel
 BuildRequires:	dbus-devel
 BuildRequires:	fftw3-single-devel
 BuildRequires:	glib-devel
@@ -70,6 +71,7 @@ Summary:	Bluetooth module for PulseAudio
 License:	GPL v2+
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	bluez4
 
 %description bluetooth
 Bluetooth module for PulseAudio.
