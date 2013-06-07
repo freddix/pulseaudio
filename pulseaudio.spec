@@ -1,11 +1,11 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	3.0
-Release:	2
+Version:	4.0
+Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	cc6e7cafff9249c5066263ee578662de
+# Source0-md5:	974efe739a4f598656c9cb74524979d4
 Source1:	%{name}-tmpfiles.conf
 URL:		http://pulseaudio.org/
 BuildRequires:	GConf-devel
@@ -253,8 +253,10 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-pipe-source.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-position-event-sounds.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-remap-sink.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-remap-source.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rescue-streams.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-role-cork.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-role-ducking.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rtp-recv.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rtp-send.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-rygel-media-server.so
@@ -299,7 +301,7 @@ fi
 %attr(755,root,root) %{_libdir}/libpulse-simple.so.*.*.*
 %attr(755,root,root) %{_libdir}/libpulse.so.*.*.*
 %dir %{_libdir}/pulseaudio
-%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-3.0.so
+%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-4.0.so
 
 %files devel
 %defattr(644,root,root,755)
