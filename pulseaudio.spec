@@ -1,24 +1,22 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	4.0
+Version:	4.99.3
 Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	974efe739a4f598656c9cb74524979d4
+# Source0-md5:	4f0b36b1eb2ab09330984f70d9fa5f74
 Source1:	%{name}-tmpfiles.conf
 URL:		http://pulseaudio.org/
-BuildRequires:	GConf-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	avahi-devel
-BuildRequires:	bluez4-devel
 BuildRequires:	dbus-devel
 BuildRequires:	fftw3-single-devel
 BuildRequires:	glib-devel
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	json-c-devel
+BuildRequires:	json-c-devel >= 0.11-2
 BuildRequires:	libasyncns-devel
 BuildRequires:	libatomic_ops
 BuildRequires:	libcap-devel
@@ -118,9 +116,6 @@ X11 module for PulseAudio.
 %prep
 %setup -q
 
-%{__sed} -i 's/load-module module-console-kit/#load-module module-console-kit/g' \
-	src/daemon/default.pa.in
-
 %build
 %{__libtoolize}
 %{__aclocal} -I m4
@@ -128,20 +123,23 @@ X11 module for PulseAudio.
 %{__autoheader}
 %{__automake}
 %configure \
-	--disable-default-build-tests		\
-	--disable-esound			\
-	--disable-lirc				\
-	--disable-oss-output			\
-	--disable-oss-wrapper			\
-	--disable-silent-rules			\
-	--disable-solaris			\
-	--disable-static			\
-	--disable-tcpwrap			\
-	--disable-xen				\
-	--enable-systemd			\
-	--with-access-group=pulse-access	\
-	--with-system-group=pulse		\
-	--with-system-user=pulse		\
+	--disable-bluez4		    \
+	--disable-default-build-tests	    \
+	--disable-esound		    \
+	--disable-gconf			    \
+	--disable-hal-compat		    \
+	--disable-lirc			    \
+	--disable-oss-output		    \
+	--disable-oss-wrapper		    \
+	--disable-silent-rules		    \
+	--disable-solaris		    \
+	--disable-static		    \
+	--disable-tcpwrap		    \
+	--disable-xen			    \
+	--enable-systemd		    \
+	--with-access-group=pulse-access    \
+	--with-system-group=pulse	    \
+	--with-system-user=pulse	    \
 	--with-udev-rules-dir=/usr/lib/udev/rules.d
 %{__make}
 
@@ -154,7 +152,7 @@ install -d $RPM_BUILD_ROOT/var/lib/pulse
 
 install -D %{SOURCE1} $RPM_BUILD_ROOT%{systemdtmpfilesdir}/pulse.conf
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/pulse-*/modules/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la
 
 %find_lang %{name}
 
@@ -181,7 +179,6 @@ fi
 %doc README
 
 %dir %{_datadir}/pulseaudio
-%dir %{_libdir}/pulse
 %dir %{_libdir}/pulse-*
 %dir %{_libdir}/pulse-*/modules
 %dir %{_sysconfdir}/pulse
@@ -269,7 +266,9 @@ fi
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-connect.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-switch-on-port-available.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-systemd-login.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-sink-new.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-sink.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-source-new.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-tunnel-source.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-udev-detect.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-virtual-sink.so
@@ -296,12 +295,12 @@ fi
 %attr(755,root,root) %ghost %{_libdir}/libpulse-mainloop-glib.so.?
 %attr(755,root,root) %ghost %{_libdir}/libpulse-simple.so.?
 %attr(755,root,root) %ghost %{_libdir}/libpulse.so.?
-%attr(755,root,root) %{_libdir}/libpulse*-%{version}.so
+%attr(755,root,root) %{_libdir}/libpulse*-*.so
 %attr(755,root,root) %{_libdir}/libpulse-mainloop-glib.so.*.*.*
 %attr(755,root,root) %{_libdir}/libpulse-simple.so.*.*.*
 %attr(755,root,root) %{_libdir}/libpulse.so.*.*.*
 %dir %{_libdir}/pulseaudio
-%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-4.0.so
+%attr(755,root,root) %{_libdir}/pulseaudio/libpulsecommon-*.so
 
 %files devel
 %defattr(644,root,root,755)
@@ -320,16 +319,10 @@ fi
 
 %files bluetooth
 %defattr(644,root,root,755)
-%attr(4755,root,root) %{_libdir}/pulse/proximity-helper
-%attr(755,root,root) %{_libdir}/pulse-*/modules/libbluetooth-util.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-device.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/libbluez5-util.so
 %attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-discover.so
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluetooth-proximity.so
-
-%files gconf
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/pulse/gconf-helper
-%attr(755,root,root) %{_libdir}/pulse-*/modules/module-gconf.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluez5-device.so
+%attr(755,root,root) %{_libdir}/pulse-*/modules/module-bluez5-discover.so
 
 %files jack
 %defattr(644,root,root,755)
