@@ -1,11 +1,11 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	4.99.3
+Version:	4.99.4
 Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
 Source0:	http://freedesktop.org/software/pulseaudio/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	4f0b36b1eb2ab09330984f70d9fa5f74
+# Source0-md5:	e47bffa8281deadb88200ec7ae986be5
 Source1:	%{name}-tmpfiles.conf
 URL:		http://pulseaudio.org/
 BuildRequires:	alsa-lib-devel
