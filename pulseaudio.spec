@@ -1,6 +1,6 @@
 Summary:	Sound server
 Name:		pulseaudio
-Version:	4.99.4
+Version:	5.0
 Release:	1
 License:	GPL v2+ (server and libpulsecore), LGPL v2+ (libpulse)
 Group:		Libraries
